@@ -1,5 +1,5 @@
 import os
-from langdetect import detect, langdetect
+from langdetect import detect  # Corretto: solo detect, non langdetect
 import openai
 from twilio.twiml.messaging_response import MessagingResponse
 from flask import Flask, request
