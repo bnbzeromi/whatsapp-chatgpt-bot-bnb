@@ -1,5 +1,5 @@
 import os
-from langdetect import detect  # Corretto: solo detect, non langdetect
+import langid  # Usa langid per il rilevamento della lingua
 import openai
 from twilio.twiml.messaging_response import MessagingResponse
 from flask import Flask, request
@@ -18,13 +18,9 @@ def whatsapp_webhook():
     try:
         print(f"Messaggio in ingresso: {incoming_msg}")  # Log del messaggio ricevuto
 
-        # Rilevamento lingua
-        try:
-            detected_language = detect(incoming_msg)
-            print(f"Lingua rilevata: {detected_language}")  # Log della lingua rilevata
-        except langdetect.lang_detect_exception.LangDetectException:
-            detected_language = "en"
-            print("Errore nel rilevamento della lingua, fallback su inglese.")  # Log se c'è un errore nel rilevamento
+        # Rilevamento lingua con langid
+        detected_language, _ = langid.classify(incoming_msg)
+        print(f"Lingua rilevata con langid: {detected_language}")  # Log della lingua rilevata
 
         # Configura il prompt in base alla lingua
         if detected_language == "it":
@@ -59,3 +55,4 @@ if __name__ == "__main__":
     # Questo comando avvia il server Flask in modalità debug
     # Assicurati che questa parte sia configurata correttamente per Railway (di solito Railway usa gunicorn)
     app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+
