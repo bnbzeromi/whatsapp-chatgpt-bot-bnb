@@ -22,15 +22,15 @@ def whatsapp_webhook():
 
         print(f"Prompt inviato a OpenAI: {prompt}")  # Log del prompt inviato a OpenAI
 
-        # Chiamata a OpenAI
-        openai_response = openai.Completion.create(
-            engine="text-davinci-003",  # Modifica con il motore che preferisci
-            prompt=prompt,
+        # Chiamata a OpenAI con il modello gpt-4
+        openai_response = openai.ChatCompletion.create(
+            model="gpt-4",  # Usa il modello gpt-4
+            messages=[{"role": "user", "content": prompt}],
             max_tokens=150  # Limita il numero di token per evitare risposte troppo lunghe
         )
 
         # Ottieni la risposta da OpenAI
-        reply = openai_response["choices"][0]["text"].strip()
+        reply = openai_response["choices"][0]["message"]["content"].strip()
         print(f"Risposta di OpenAI: {reply}")  # Log della risposta generata
 
     except openai.error.OpenAIError as e:
@@ -47,4 +47,3 @@ def whatsapp_webhook():
 if __name__ == "__main__":
     # Avvia il server Flask (assicurati che Railway usi gunicorn o un altro server di produzione per il deploy)
     app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
-
