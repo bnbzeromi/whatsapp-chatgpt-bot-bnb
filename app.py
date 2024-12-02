@@ -1,12 +1,11 @@
 import os
-import langid  # Usa langid per il rilevamento della lingua
 import openai
 from twilio.twiml.messaging_response import MessagingResponse
 from flask import Flask, request
 
 app = Flask(__name__)
 
-# Imposta la chiave API di OpenAI tramite variabile d'ambiente (su Railway, configurala nelle variabili d'ambiente)
+# Imposta la chiave API di OpenAI tramite variabile d'ambiente
 openai.api_key = os.environ.get("OPENAI_API_KEY")
 
 @app.route("/webhook", methods=["POST"])
@@ -18,17 +17,8 @@ def whatsapp_webhook():
     try:
         print(f"Messaggio in ingresso: {incoming_msg}")  # Log del messaggio ricevuto
 
-        # Rilevamento lingua con langid
-        detected_language, _ = langid.classify(incoming_msg)
-        print(f"Lingua rilevata con langid: {detected_language}")  # Log della lingua rilevata
-
-        # Configura il prompt in base alla lingua
-        if detected_language == "it":
-            prompt = f"Rispondi in italiano: {incoming_msg}"
-        elif detected_language == "es":
-            prompt = f"Responde en español: {incoming_msg}"
-        else:
-            prompt = f"Reply in English: {incoming_msg}"
+        # Configura il prompt in inglese
+        prompt = f"Reply in English: {incoming_msg}"
 
         print(f"Prompt inviato a OpenAI: {prompt}")  # Log del prompt inviato a OpenAI
 
@@ -52,7 +42,5 @@ def whatsapp_webhook():
     return str(response)
 
 if __name__ == "__main__":
-    # Questo comando avvia il server Flask in modalità debug
-    # Assicurati che questa parte sia configurata correttamente per Railway (di solito Railway usa gunicorn)
+    # Avvia il server Flask (assicurati che Railway usi gunicorn o un altro server di produzione per il deploy)
     app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
-
